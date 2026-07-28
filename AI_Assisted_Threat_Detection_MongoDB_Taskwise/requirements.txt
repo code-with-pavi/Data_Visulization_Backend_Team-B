@@ -1,0 +1,10 @@
+pandas
+numpy
+fastapi
+uvicorn
+pymongo
+scikit-learn
+plotly
+dash
+requests
+python-dotenv
