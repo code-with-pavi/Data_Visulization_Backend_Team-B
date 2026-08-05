@@ -1,4 +1,213 @@
 from database.mongodb import get_db
+from database.mongodb import db
+from database.mongodb import db
+from database.mongodb import db
+from database.mongodb import db
+from database.mongodb import db
+from database.mongodb import db
+from database.mongodb import db
+
+
+def get_top_targeted_assets_data(limit=10):
+    """
+    Return the most targeted assets.
+    """
+
+    pipeline = [
+
+        {
+            "$group": {
+                "_id": "$asset_id",
+                "attack_count": {"$sum": 1},
+                "highest_severity": {"$max": "$severity"}
+            }
+        },
+
+        {
+            "$sort": {
+                "attack_count": -1
+            }
+        },
+
+        {
+            "$limit": limit
+        },
+
+        {
+            "$project": {
+                "_id": 0,
+                "asset_id": "$_id",
+                "attack_count": 1,
+                "highest_severity": 1
+            }
+        }
+
+    ]
+
+    return list(
+        db.security_events.aggregate(pipeline)
+    )
+
+
+def get_attack_heatmap_data():
+    """
+    Aggregate attack counts grouped by asset.
+    """
+
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$asset_id",
+                "attack_count": {"$sum": 1}
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "asset_id": "$_id",
+                "attack_count": 1
+            }
+        },
+        {
+            "$sort": {
+                "attack_count": -1
+            }
+        }
+    ]
+
+    return list(
+        db.security_events.aggregate(pipeline)
+    )
+
+
+def get_live_dashboard_data():
+    """
+    Return the latest dashboard statistics.
+    """
+
+    return {
+
+        "total_assets":
+        db.assets.count_documents({}),
+
+        "total_vulnerabilities":
+        db.vulnerabilities.count_documents({}),
+
+        "total_security_events":
+        db.security_events.count_documents({}),
+
+        "total_incidents":
+        db.incident_history.count_documents({}),
+
+        "critical_events":
+        db.security_events.count_documents(
+            {"severity": "Critical"}
+        ),
+
+        "high_events":
+        db.security_events.count_documents(
+            {"severity": "High"}
+        ),
+
+        "last_updated":
+        str(db.security_events.find_one(
+            sort=[("timestamp", -1)]
+        )["timestamp"])
+        if db.security_events.count_documents({}) > 0
+        else "No Data"
+    }
+
+
+def get_threat_timeline():
+    """
+    Return security events ordered by timestamp.
+    """
+
+    events = list(
+        db.security_events.find(
+            {},
+            {
+                "_id": 0,
+                "event_id": 1,
+                "timestamp": 1,
+                "attack_name": 1,
+                "severity": 1,
+                "risk_level": 1,
+                "asset_id": 1
+            }
+        ).sort("timestamp", 1)
+    )
+
+    return events
+
+
+def search_security_events(keyword):
+    """
+    Search security events by multiple fields.
+    """
+
+    query = {
+        "$or": [
+
+            {"event_id": {"$regex": keyword, "$options": "i"}},
+
+            {"asset_id": {"$regex": keyword, "$options": "i"}},
+
+            {"attack_name": {"$regex": keyword, "$options": "i"}},
+
+            {"severity": {"$regex": keyword, "$options": "i"}},
+
+            {"risk_level": {"$regex": keyword, "$options": "i"}},
+
+            {"status": {"$regex": keyword, "$options": "i"}}
+        ]
+    }
+
+    events = list(
+        db.security_events.find(query)
+    )
+
+    for event in events:
+
+        event["_id"] = str(event["_id"])
+
+    return events
+
+
+def get_dashboard_summary():
+
+    return {
+
+        "Total Assets":
+        db.assets.count_documents({}),
+
+        "Total Vulnerabilities":
+        db.vulnerabilities.count_documents({}),
+
+        "Security Events":
+        db.security_events.count_documents({}),
+
+        "Threat Intelligence":
+        db.threat_intelligence.count_documents({}),
+
+        "MITRE Mappings":
+        db.mitre_mapping.count_documents({}),
+
+        "Engineered Features":
+        db.engineered_features.count_documents({})
+    }
+
+
+def get_all_security_events():
+    """
+    Retrieve all security events from MongoDB.
+    """
+
+    collection = db["security_events"]
+
+    data = list(collection.find())
+
+    return data
 
 
 def get_collection(collection_name):

@@ -18,6 +18,13 @@ from routes.threats import threats_bp
 from routes.incidents import incidents_bp
 from routes.analytics import analytics_bp
 from routes.dashboard import dashboard_bp
+from routes.export import export_bp
+from routes.report import report_bp
+from routes.search import search_bp
+from routes.timeline import timeline_bp
+from routes.dashboard import dashboard_bp
+from routes.heatmap import heatmap_bp
+from routes.top_assets import top_assets_bp
 
 
 def create_app():
@@ -45,6 +52,13 @@ def create_app():
     app.register_blueprint(incidents_bp, url_prefix="/api/incidents")
     app.register_blueprint(analytics_bp, url_prefix="/api/analytics")
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
+    app.register_blueprint(export_bp, url_prefix="/api/export")
+    app.register_blueprint(report_bp, url_prefix="/api/report")
+    app.register_blueprint(search_bp, url_prefix="/api/search")
+    app.register_blueprint(timeline_bp, url_prefix="/api/timeline")
+    app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
+    app.register_blueprint(heatmap_bp, url_prefix="/api/heatmap")
+    app.register_blueprint(top_assets_bp, url_prefix="/api/top-assets")
 
     # -----------------------------
     # Home Route
@@ -107,3 +121,5 @@ if __name__ == "__main__":
         port=5000,
         debug=Config.DEBUG
     )
+
+
