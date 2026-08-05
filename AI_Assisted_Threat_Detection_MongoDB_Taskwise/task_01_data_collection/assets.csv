@@ -1,0 +1,11 @@
+asset_id,asset_name,asset_criticality,asset_type,owner
+AST-001,Email Gateway,5,Email,IT
+AST-002,Finance DB,5,Database,Finance
+AST-003,HR Portal,4,Web,HR
+AST-004,VPN Gateway,5,Network,IT
+AST-005,Web Server,4,Web,IT
+AST-006,File Server,4,Storage,IT
+AST-007,Admin Workstation,5,Endpoint,Security
+AST-008,Dev Server,3,Server,Engineering
+AST-009,Customer API,5,API,Product
+AST-010,Backup Server,5,Storage,IT
