@@ -2,38 +2,50 @@
 
 ## Overview
 
-The **AI-Assisted Threat Detection Dashboard** is a cybersecurity analytics platform that automates the collection, processing, enrichment, and analysis of security-related data. The project integrates multiple cybersecurity datasets, enriches threat information, maps attacks to the MITRE ATT&CK framework, engineers analytical features, stores processed data in MongoDB, and exposes REST APIs for visualization through a dashboard.
+The **AI-Assisted Threat Detection Dashboard** is a cybersecurity analytics platform designed to automate the collection, processing, enrichment, storage, and visualization of security-related data. The system integrates multiple cybersecurity datasets, enriches threat intelligence, maps attacks to the MITRE ATT&CK framework, performs feature engineering, stores processed data in MongoDB, and provides RESTful APIs for a frontend dashboard.
 
-The primary objective is to provide security analysts with a centralized platform for monitoring assets, vulnerabilities, threats, incidents, and overall organizational risk.
+The project enables security analysts to monitor assets, vulnerabilities, security events, and incidents while providing actionable insights through analytics and reporting.
 
 ---
 
 # Features
 
-* Automated Data Collection
-* Data Cleaning and Preprocessing
-* Threat Intelligence Enrichment
+## Core Pipeline
+
+* Data Collection
+* Data Cleaning
+* Threat Enrichment
 * MITRE ATT&CK Mapping
 * Feature Engineering
-* MongoDB Database Integration
-* RESTful APIs using Flask
-* Dashboard Analytics
-* Risk Scoring
-* Asset Risk Categorization
-* CSV Output Generation
-* Modular Project Architecture
+* MongoDB Storage
+* REST APIs
 
 ---
 
-# Technologies Used
+## Dashboard Features
+
+* Dashboard Analytics
+* Search Security Events
+* Threat Timeline
+* Heatmap of Attacks
+* Top Targeted Assets
+* Auto Refresh Dashboard API
+* Export Security Events as CSV
+* Download Threat Report as PDF
+
+---
+
+# Technology Stack
 
 ## Backend
 
 * Python 3.10+
 * Flask
+* Flask-CORS
 * Pandas
 * NumPy
 * PyMongo
+* ReportLab
 
 ## Database
 
@@ -43,10 +55,6 @@ The primary objective is to provide security analysts with a centralized platfor
 
 * Pandas
 * NumPy
-
-## API
-
-* Flask REST APIs
 
 ## Logging
 
@@ -86,6 +94,7 @@ backend/
 │   └── queries.py
 │
 ├── models/
+│   ├── __init__.py
 │   ├── asset_model.py
 │   ├── vulnerability_model.py
 │   ├── threat_model.py
@@ -94,21 +103,31 @@ backend/
 │   └── mitre_model.py
 │
 ├── services/
+│   ├── __init__.py
 │   ├── pipeline_service.py
 │   ├── enrichment_service.py
 │   ├── mitre_service.py
 │   ├── analytics_service.py
-│   └── feature_service.py
+│   ├── feature_service.py
+│   └── report_service.py
 │
 ├── routes/
+│   ├── __init__.py
 │   ├── assets.py
 │   ├── vulnerabilities.py
 │   ├── threats.py
 │   ├── incidents.py
 │   ├── analytics.py
-│   └── dashboard.py
+│   ├── dashboard.py
+│   ├── export.py
+│   ├── report.py
+│   ├── search.py
+│   ├── timeline.py
+│   ├── heatmap.py
+│   └── top_assets.py
 │
 ├── utils/
+│   ├── __init__.py
 │   ├── constants.py
 │   ├── helper.py
 │   ├── logger.py
@@ -118,7 +137,8 @@ backend/
 │   ├── cleaned_data.csv
 │   ├── enriched_data.csv
 │   ├── mapped_data.csv
-│   └── engineered_features.csv
+│   ├── engineered_features.csv
+│   └── Threat_Report.pdf
 │
 └── logs/
     └── application.log
@@ -126,11 +146,9 @@ backend/
 
 ---
 
-# Workflow
+# Data Processing Pipeline
 
-The complete pipeline follows these stages:
-
-```
+```text
 CSV Datasets
       │
       ▼
@@ -149,7 +167,7 @@ MITRE ATT&CK Mapping
 Feature Engineering
       │
       ▼
-MongoDB Storage
+MongoDB Database
       │
       ▼
 REST APIs
@@ -164,9 +182,7 @@ Threat Detection Dashboard
 
 ## 1. Data Collection
 
-The system loads cybersecurity datasets from the `data` directory.
-
-Datasets include:
+Loads cybersecurity datasets from the `data` folder, including:
 
 * Assets
 * Vulnerabilities
@@ -179,194 +195,188 @@ Datasets include:
 
 ## 2. Data Cleaning
 
-The cleaning process performs:
+Performs:
 
-* Removing duplicate records
-* Removing empty rows
-* Handling missing values
-* Standardizing column names
-* Normalizing severity values
-* Converting timestamps
-* Removing duplicate columns
+* Remove duplicate records
+* Handle missing values
+* Standardize column names
+* Normalize severity levels
+* Convert date/time fields
+* Remove duplicate columns
 
-The cleaned dataset is exported as:
+Output:
 
-```
-outputs/cleaned_data.csv
-```
+* `outputs/cleaned_data.csv`
 
 ---
 
 ## 3. Threat Enrichment
 
-Threat enrichment combines security events with:
+Enhances security events by merging:
 
-* Vulnerabilities
-* Threat Intelligence
+* Vulnerability information
+* Threat intelligence
 
-Additional information generated includes:
+Generates:
 
 * Threat Score
 * Risk Level
 * IOC Match
-* Known Exploit Status
+* Known Exploit
 * Enrichment Status
 
 Output:
 
-```
-outputs/enriched_data.csv
-```
+* `outputs/enriched_data.csv`
 
 ---
 
 ## 4. MITRE ATT&CK Mapping
 
-Each attack is mapped to the MITRE ATT&CK framework.
+Maps attacks to the MITRE ATT&CK framework.
 
-Generated fields include:
+Generated fields:
 
 * Technique ID
 * Technique Name
 * Tactic
-* MITRE Mapping Status
-* MITRE Score
+* Mapping Status
 
 Output:
 
-```
-outputs/mapped_data.csv
-```
+* `outputs/mapped_data.csv`
 
 ---
 
 ## 5. Feature Engineering
 
-The system generates features such as:
+Creates analytical features such as:
 
 * Threat Score
 * CVSS Score
 * Incident Frequency
 * Historical Risk
-* Patch Age
 * Asset Risk Score
 * Overall Risk Score
 * Risk Category
 
 Output:
 
-```
-outputs/engineered_features.csv
-```
+* `outputs/engineered_features.csv`
 
 ---
 
 # MongoDB Collections
 
-The processed datasets are stored in MongoDB.
+The processed datasets are stored in MongoDB collections:
 
-Collections include:
-
-```
-assets
-
-vulnerabilities
-
-security_events
-
-incident_history
-
-threat_intelligence
-
-mitre_mapping
-
-enriched_events
-
-mapped_events
-
-engineered_features
-```
+* assets
+* vulnerabilities
+* security_events
+* incident_history
+* threat_intelligence
+* mitre_mapping
+* enriched_events
+* mapped_events
+* engineered_features
 
 ---
 
-# REST APIs
+# REST API Endpoints
 
-| Method | Endpoint             | Description                  |
-| ------ | -------------------- | ---------------------------- |
-| GET    | /                    | Home Page                    |
-| GET    | /health              | Application Health           |
-| GET    | /api/assets          | Retrieve Assets              |
-| GET    | /api/vulnerabilities | Retrieve Vulnerabilities     |
-| GET    | /api/threats         | Retrieve Threat Intelligence |
-| GET    | /api/incidents       | Retrieve Incidents           |
-| GET    | /api/analytics       | Dashboard Analytics          |
-| GET    | /api/dashboard       | Dashboard Data               |
-| GET    | /api/pipeline/run    | Execute Complete Pipeline    |
+| Method | Endpoint               | Description                   |
+| ------ | ---------------------- | ----------------------------- |
+| GET    | `/`                    | Home                          |
+| GET    | `/health`              | Health Check                  |
+| GET    | `/api/assets`          | Retrieve Assets               |
+| GET    | `/api/vulnerabilities` | Retrieve Vulnerabilities      |
+| GET    | `/api/threats`         | Retrieve Threat Intelligence  |
+| GET    | `/api/incidents`       | Retrieve Incidents            |
+| GET    | `/api/dashboard`       | Dashboard Statistics          |
+| GET    | `/api/analytics`       | Analytics Data                |
+| GET    | `/api/export/csv`      | Export Security Events as CSV |
+| GET    | `/api/report/pdf`      | Download Threat Report (PDF)  |
+| GET    | `/api/search?q=value`  | Search Security Events        |
+| GET    | `/api/timeline`        | Threat Timeline               |
+| GET    | `/api/heatmap`         | Heatmap Data                  |
+| GET    | `/api/top-assets`      | Top Targeted Assets           |
 
 ---
 
-# Feature Engineering
+# Dashboard Features
 
-The final engineered dataset contains features including:
+## Search Event
 
+Searches security events by:
+
+* Event ID
 * Asset ID
-* Threat Score
-* CVSS Score
-* Incident Frequency
-* Historical Risk
-* Asset Risk Score
-* Overall Risk Score
-* Risk Category
-* MITRE Technique ID
-* MITRE Tactic
+* Attack Name
+* Severity
+* Risk Level
+* Status
 
-These features can be directly used for:
+---
 
-* Dashboards
-* Machine Learning
-* Risk Analysis
-* Threat Hunting
-* Predictive Analytics
+## Threat Timeline
+
+Returns security events sorted by timestamp for chronological visualization.
+
+---
+
+## Heatmap of Attacks
+
+Provides aggregated attack counts grouped by asset (or by location if geographic data is available).
+
+---
+
+## Top Targeted Assets
+
+Returns the assets with the highest number of recorded attacks.
+
+---
+
+## Auto Refresh Dashboard
+
+The dashboard API always returns the latest MongoDB data. The frontend can periodically request `/api/dashboard` to refresh the displayed information.
+
+---
+
+## Export CSV
+
+Downloads all security events as a CSV file.
+
+Generated file:
+
+* `security_events.csv`
+
+---
+
+## Download PDF Report
+
+Generates a PDF report summarizing dashboard statistics and threat information.
+
+Generated file:
+
+* `outputs/Threat_Report.pdf`
 
 ---
 
 # Logging
 
-The application maintains logs inside:
+Application logs are stored in:
 
-```
+```text
 logs/application.log
 ```
 
-Logged events include:
+Logs include:
 
-* Application Startup
-* MongoDB Connection
-* Data Collection
-* Data Cleaning
-* Threat Enrichment
-* MITRE Mapping
-* Feature Engineering
-* Database Storage
-* API Requests
-* Errors and Exceptions
-
----
-
-# Outputs
-
-During execution, the pipeline automatically generates:
-
-```
-outputs/
-│
-├── cleaned_data.csv
-├── enriched_data.csv
-├── mapped_data.csv
-└── engineered_features.csv
-```
-
-These files help validate each stage of preprocessing before storage in MongoDB.
+* Application startup
+* MongoDB connection
+* Data processing stages
+* API requests
+* Errors and exceptions
 
 ---
 
@@ -393,7 +403,7 @@ Activate the environment:
 venv\Scripts\activate
 ```
 
-### Linux / macOS
+### Linux/macOS
 
 ```bash
 source venv/bin/activate
@@ -416,7 +426,7 @@ MONGO_URI = "mongodb://localhost:27017/"
 DATABASE_NAME = "ThreatDetectionDB"
 ```
 
-Start MongoDB before running the application.
+Ensure the MongoDB server is running before starting the application.
 
 ---
 
@@ -428,41 +438,41 @@ Start the Flask application:
 python app.py
 ```
 
-The backend server starts at:
+Server URL:
 
-```
+```text
 http://127.0.0.1:5000
 ```
 
 ---
 
-# Running the Complete Pipeline
+# Testing APIs
 
-The complete pipeline can also be executed using:
+| Feature      | Endpoint                     |
+| ------------ | ---------------------------- |
+| Home         | `GET /`                      |
+| Health       | `GET /health`                |
+| Dashboard    | `GET /api/dashboard`         |
+| Export CSV   | `GET /api/export/csv`        |
+| Download PDF | `GET /api/report/pdf`        |
+| Search       | `GET /api/search?q=critical` |
+| Timeline     | `GET /api/timeline`          |
+| Heatmap      | `GET /api/heatmap`           |
+| Top Assets   | `GET /api/top-assets`        |
 
-```bash
-python services/pipeline_service.py
-```
+These endpoints can be tested using a browser (for downloads), Postman, or any REST client.
 
 ---
 
-# Expected Pipeline Output
+# Output Files
 
-```
-Loading Datasets...
+The pipeline generates:
 
-Cleaning Datasets...
-
-Threat Enrichment Completed
-
-MITRE Mapping Completed
-
-Feature Engineering Completed
-
-MongoDB Storage Completed
-
-Pipeline Finished Successfully
-```
+* `outputs/cleaned_data.csv`
+* `outputs/enriched_data.csv`
+* `outputs/mapped_data.csv`
+* `outputs/engineered_features.csv`
+* `outputs/Threat_Report.pdf`
 
 ---
 
@@ -471,15 +481,13 @@ Pipeline Finished Successfully
 This project demonstrates practical implementation of:
 
 * Cybersecurity Data Analytics
-* Data Engineering
-* Threat Intelligence
-* MITRE ATT&CK Framework
+* Threat Intelligence Processing
+* MITRE ATT&CK Integration
 * Feature Engineering
-* MongoDB Integration
-* REST API Development
-* Flask Backend Development
-* Data Preprocessing
-* Security Dashboard Design
-
-
+* MongoDB Database Design
+* Flask REST API Development
+* Data Processing Pipelines
+* Backend Architecture
+* Dashboard Data Services
+* Reporting and Data Export
 
