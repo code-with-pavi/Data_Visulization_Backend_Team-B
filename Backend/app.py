@@ -18,7 +18,7 @@ from routes.threats import threats_bp
 from routes.incidents import incidents_bp
 from routes.analytics import analytics_bp
 from routes.dashboard import dashboard_bp
-
+from routes.events import events_bp
 
 def create_app():
     """
@@ -45,7 +45,7 @@ def create_app():
     app.register_blueprint(incidents_bp, url_prefix="/api/incidents")
     app.register_blueprint(analytics_bp, url_prefix="/api/analytics")
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
-
+    app.register_blueprint(events_bp, url_prefix="/api/events")
     # -----------------------------
     # Home Route
     # -----------------------------

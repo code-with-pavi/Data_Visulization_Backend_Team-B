@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 
@@ -223,13 +224,42 @@ if __name__ == "__main__":
 
     print(features.columns.tolist())
 
-    import os
+if __name__ == "__main__":
 
-os.makedirs("outputs", exist_ok=True)
+    from data_collection import load_data
+    from data_cleaning import clean_data
+    from threat_enrichment import enrich_threat_data
+    from mitre_mapping import map_mitre
 
-features.to_csv(
-    "outputs/engineered_features.csv",
-    index=False
-)
+    # Load datasets
+    datasets = load_data()
 
-print("Saved outputs/engineered_features.csv")
+    # Clean datasets
+    cleaned = clean_data(datasets)
+
+    # Threat Enrichment
+    enriched = enrich_threat_data(cleaned)
+
+    # MITRE Mapping
+    mapped = map_mitre(
+        enriched,
+        cleaned["mitre_mapping"]
+    )
+
+    # Feature Engineering
+    features = engineer_features(mapped)
+
+    print("\nFeature Dataset Preview\n")
+    print(features.head())
+
+    print("\nGenerated Features\n")
+    print(features.columns.tolist())
+
+    os.makedirs("outputs", exist_ok=True)
+
+    features.to_csv(
+        "outputs/engineered_features.csv",
+        index=False
+    )
+
+    print("Saved outputs/engineered_features.csv")
