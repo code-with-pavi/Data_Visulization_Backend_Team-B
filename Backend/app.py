@@ -22,7 +22,6 @@ from routes.export import export_bp
 from routes.report import report_bp
 from routes.search import search_bp
 from routes.timeline import timeline_bp
-from routes.dashboard import dashboard_bp
 from routes.heatmap import heatmap_bp
 from routes.top_assets import top_assets_bp
 
@@ -36,7 +35,13 @@ def create_app():
     app.config.from_object(Config)
 
     # Enable Cross-Origin Resource Sharing
-    CORS(app)
+    CORS(
+    app,
+    resources={r"/api/*": {"origins": "http://localhost:5173"}},
+    supports_credentials=True,
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"]
+    )
 
     # -----------------------------
     # Connect to MongoDB
@@ -51,7 +56,6 @@ def create_app():
     app.register_blueprint(threats_bp, url_prefix="/api/threats")
     app.register_blueprint(incidents_bp, url_prefix="/api/incidents")
     app.register_blueprint(analytics_bp, url_prefix="/api/analytics")
-    app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
     app.register_blueprint(export_bp, url_prefix="/api/export")
     app.register_blueprint(report_bp, url_prefix="/api/report")
     app.register_blueprint(search_bp, url_prefix="/api/search")
@@ -79,6 +83,64 @@ def create_app():
         return jsonify({
             "status": "Healthy",
             "database": "MongoDB Connected"
+        })
+    # -----------------------------
+    # Dashboard KPI APIs
+    # -----------------------------
+    @app.route("/api/stats", methods=["GET", "OPTIONS"])
+    def stats():
+        return jsonify({
+            "totalEvents": 1250,
+            "criticalThreats": 22,
+            "highSeverityAlerts": 45,
+            "vulnerabilities": 18,
+            "activeIncidents": 9
+        })
+
+
+    @app.route("/api/events", methods=["GET", "OPTIONS"])
+    def events():
+        return jsonify([
+            
+        {
+            "timestamp": "2026-08-11 10:00",
+            "event_type": "DDoS Attack",
+            "severity": "Critical",
+            "source_ip": "192.168.1.10",
+            "status": "Open"
+        },
+        {
+            "timestamp": "2026-08-11 10:30",
+            "event_type": "SQL Injection",
+            "severity": "High",
+            "source_ip": "192.168.1.20",
+            "status": "Investigating"
+        },
+        {
+            "timestamp": "2026-08-11 11:00",
+            "event_type": "Unauthorized Login",
+            "severity": "Medium",
+            "source_ip": "192.168.1.30",
+            "status": "Resolved"
+        },
+        {
+            "timestamp": "2026-08-11 11:30",
+            "event_type": "Malware Execution",
+            "severity": "Critical",
+            "source_ip": "192.168.1.40",
+            "status": "Open"
+        }
+    ])
+
+
+    @app.route("/api/threat-summary", methods=["GET", "OPTIONS"])
+    def threat_summary():
+        return jsonify({
+            "totalEvents": 1250,
+            "anomaliesDetected": 86,
+            "normalEvents": 1100,
+            "highRiskEvents": 42,
+            "criticalThreats": 22
         })
 
     # -----------------------------
