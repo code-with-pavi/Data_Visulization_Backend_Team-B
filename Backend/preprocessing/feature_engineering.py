@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 
@@ -216,20 +217,16 @@ if __name__ == "__main__":
     features = engineer_features(mapped)
 
     print("\nFeature Dataset Preview\n")
-
     print(features.head())
 
     print("\nGenerated Features\n")
-
     print(features.columns.tolist())
 
-    import os
+    os.makedirs("outputs", exist_ok=True)
 
-os.makedirs("outputs", exist_ok=True)
+    features.to_csv(
+        "outputs/engineered_features.csv",
+        index=False
+    )
 
-features.to_csv(
-    "outputs/engineered_features.csv",
-    index=False
-)
-
-print("Saved outputs/engineered_features.csv")
+    print("Saved outputs/engineered_features.csv")
